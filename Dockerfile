@@ -26,7 +26,7 @@ COPY --from=builder /usr/lib/python2.7 /usr/lib/python2.7
 COPY --from=builder /usr/lib/ssl /usr/lib/ssl
 COPY --from=builder /usr/lib/sasl2 /usr/lib/sasl2
 COPY --from=builder /usr/lib/openssh /usr/lib/openssh
-COPY --from=builder /usr/lib/*-linux-gnu /usr/lib/
+COPY --from=builder /usr/lib/*-linux-* /usr/lib/
 COPY --from=builder /usr/sbin/qdrouterd /usr/sbin/qdrouterd
 
 ENV PYTHONPATH=/usr/lib/python2.7/site-packages
