@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:latest AS builder
 
 RUN apt-get update && \
     apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
@@ -18,10 +18,19 @@ WORKDIR /qpid-dispatch
 
 RUN mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRIND=NO && cmake --build . --target install
 
+FROM ubuntu:latest
+
+COPY --from=builder /usr/lib/lib* /usr/lib/
+COPY --from=builder /usr/lib/qpid-dispatch /usr/lib/qpid-dispatch
+COPY --from=builder /usr/lib/python2.7 /usr/lib/python2.7
+COPY --from=builder /usr/lib/ssl /usr/lib/ssl
+COPY --from=builder /usr/lib/sasl2 /usr/lib/sasl2
+COPY --from=builder /usr/lib/openssh /usr/lib/openssh
+COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+COPY --from=builder /usr/sbin/qdrouterd /usr/sbin/qdrouterd
+
 ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 
-WORKDIR /qpid-dispatch
-
-COPY launch.sh /qpid-dispatch
+COPY launch.sh /qpid-dispatch/launch.sh
 
 ENTRYPOINT ["/qpid-dispatch/launch.sh"]
