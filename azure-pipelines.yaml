@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - README.md
+
+variables:
+  repository: 'focal-freedom-236620/router'
+
+jobs:
+  - job: Build
+    pool:
+      vmImage: 'Ubuntu-16.04'
+
+    steps:
+      - task: Docker@2
+        displayName: 'build and push docker image'
+        inputs:
+          containerRegistry: 'Edgeworx GCP'
+          repository: $(repository)
+          command: 'buildAndPush'
+          Dockerfile: 'Dockerfile'
+          tags: |
+            latest
