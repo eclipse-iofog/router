@@ -10,7 +10,7 @@ variables:
   repository: 'focal-freedom-236620/router'
 
 jobs:
-  - job: Build x86
+  - job: Build_x86
     pool:
       vmImage: 'Ubuntu-16.04'
 
@@ -24,7 +24,7 @@ jobs:
           Dockerfile: 'Dockerfile'
           tags: |
             latest
-  - job: Build ARM
+  - job: Build_ARM
     pool: 'RPi'
 
     steps:
