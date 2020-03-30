@@ -5,7 +5,7 @@ trigger:
   paths:
     exclude:
       - README.md
-  pr: none
+pr: none
 
 variables:
   repository: 'focal-freedom-236620/router'
