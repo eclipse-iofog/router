@@ -28,7 +28,7 @@ RUN go build -o bin/router
 FROM ubuntu:latest
 
 RUN apt-get update && \
-    apt-get install -y python && \
+    apt-get install -y python iputils-ping && \
     apt-get -y clean
 
 COPY --from=qpid-builder /usr/lib/lib* /usr/lib/
