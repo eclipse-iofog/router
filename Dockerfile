@@ -47,4 +47,4 @@ COPY scripts/launch.sh /qpid-dispatch/launch.sh
 
 ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 
-ENTRYPOINT ["/qpid-dispatch/router"]
+CMD ["/qpid-dispatch/router"]
