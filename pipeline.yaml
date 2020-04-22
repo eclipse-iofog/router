@@ -28,7 +28,7 @@ steps:
       containerRegistry: 'Edgeworx DockerHub'
       repository: ${{ parameters.repository }}
       command: 'buildAndPush'
-      Dockerfile: 'Dockerfile.iofog'
+      Dockerfile: 'Dockerfile'
       tags: |
         $(Build.SourceBranchName)
         ${{ parameters.imageTag }}
