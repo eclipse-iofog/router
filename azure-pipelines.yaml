@@ -1,41 +1,73 @@
 trigger:
+  tags:
+    include:
+      - v*
   branches:
     include:
-      - master
+      - develop
+      - release*
   paths:
     exclude:
       - README.md
 pr: none
 
 variables:
-  repository: 'iofog/router'
-  registry: 'Edgeworx DockerHub'
+  ref: $(Build.SourceBranch)
+  buildTag: $(Build.BuildId)
+  repository: 'focal-freedom-236620/router'
 
 jobs:
   - job: Build_x86
     pool:
       vmImage: 'Ubuntu-16.04'
 
+    variables:
+      imageTag:
+
     steps:
-      - task: Docker@2
-        displayName: 'build and push docker image'
-        inputs:
-          containerRegistry: $(registry)
+      - script: |
+          if [[ $(ref) == refs/tags* ]]; then
+            TAG=$(echo $(ref) | sed "s|refs/tags/v||g")
+            echo "##vso[task.setvariable variable=imageTag]$TAG"
+          else
+            LATESTTAG=$(git tag | tail -1)
+            LATESTVERS=${LATESTTAG#?}
+            if [ -z "$LATESTVERS" ]; then LATESTVERS=0.0.0; fi
+            echo "##vso[task.setvariable variable=imageTag]$LATESTVERS-b$(buildTag)"
+          fi
+        displayName: 'Set image tag'
+      - script: |
+          echo $(imageTag)
+        displayName: 'Check image tag'
+      - template: pipeline.yaml
+        parameters:
+          arch: 'X86'
           repository: $(repository)
-          command: 'buildAndPush'
-          Dockerfile: 'Dockerfile'
-          tags: |
-            develop
+          imageTag: $(imageTag)
+
   - job: Build_ARM
     pool: 'RPi'
 
+    variables:
+      imageTag:
+
     steps:
-      - task: Docker@2
-        displayName: 'build and push docker image'
-        inputs:
-          containerRegistry: $(registry)
+      - script: |
+          if [[ $(ref) == refs/tags* ]]; then
+            TAG=$(echo $(ref) | sed "s|refs/tags/v||g")
+            echo "##vso[task.setvariable variable=imageTag]$TAG"
+          else
+            LATESTTAG=$(git tag | tail -1)
+            LATESTVERS=${LATESTTAG#?}
+            if [ -z "$LATESTVERS" ]; then LATESTVERS=0.0.0; fi
+            echo "##vso[task.setvariable variable=imageTag]$LATESTVERS-b$(buildTag)"
+          fi
+        displayName: 'Set image tag'
+      - script: |
+          echo $(imageTag)
+        displayName: 'Check image tag'
+      - template: pipeline.yaml
+        parameters:
+          arch: 'ARM'
           repository: $(repository)-arm
-          command: 'buildAndPush'
-          Dockerfile: 'Dockerfile'
-          tags: |
-            develop
+          imageTag: $(imageTag)
