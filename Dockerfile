@@ -1,5 +1,8 @@
 FROM ubuntu:latest AS qpid-builder
 
+ENV TZ=America/New_York
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
