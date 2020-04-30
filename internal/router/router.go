@@ -15,6 +15,7 @@ package router
 
 import (
 	"fmt"
+
 	"github.com/eclipse-iofog/router/internal/exec"
 )
 
@@ -150,7 +151,7 @@ func (router *Router) GetRouterConfig() string {
 
 	connectorsConfig := ""
 	for _, connector := range router.connectors {
-		connectorsConfig += fmt.Sprintf("\\nconnector {\\n  name: %s\\n  host: %s\\n  port: %d\\n  role: %s\\n}", connectorName(connector), connector.Host, connector.Port, connector.Role)
+		connectorsConfig += fmt.Sprintf("\\nconnector {\\n  name: %s\\n  host: %s\\n  port: %d\\n  role: %s\\n  saslMechanisms: ANONYMOUS\\n}", connectorName(connector), connector.Host, connector.Port, connector.Role)
 	}
 
 	return fmt.Sprintf("router {\\n  mode: %s\\n  id: %s\\n}%s%s", router.Config.Mode, router.Config.Name, listenersConfig, connectorsConfig)
