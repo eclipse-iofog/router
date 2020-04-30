@@ -79,6 +79,8 @@ func (router *Router) createListener(listener Listener) {
 		fmt.Sprintf("role=%s", listener.Role),
 		fmt.Sprintf("host=%s", listener.Host),
 		fmt.Sprintf("name=%s", listenerName(listener)),
+		fmt.Sprintf("saslMechanisms=ANONYMOUS"),
+		fmt.Sprintf("authenticatePeer=no"),
 	}
 	qdmanage(args)
 	router.listeners[listenerName(listener)] = listener
@@ -143,7 +145,7 @@ func (router *Router) UpdateRouter(newConfig *Config) {
 func (router *Router) GetRouterConfig() string {
 	listenersConfig := ""
 	for _, listener := range router.listeners {
-		listenersConfig += fmt.Sprintf("\\nlistener {\\n  name: %s\\n  role: %s\\n  host: %s\\n  port: %d\\n}", listenerName(listener), listener.Role, listener.Host, listener.Port)
+		listenersConfig += fmt.Sprintf("\\nlistener {\\n  name: %s\\n  role: %s\\n  host: %s\\n  port: %d\\n  saslMechanisms: ANONYMOUS\\n  authenticatePeer: no\\n}", listenerName(listener), listener.Role, listener.Host, listener.Port)
 	}
 
 	connectorsConfig := ""
