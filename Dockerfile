@@ -1,4 +1,4 @@
-FROM ubuntu:latest AS qpid-builder
+FROM debian:latest AS qpid-builder
 
 ENV TZ=America/New_York
 ENV DEBIAN_FRONTEND=noninteractive
@@ -28,7 +28,7 @@ WORKDIR /go/src/github.com/eclipse-iofog/router
 COPY . /go/src/github.com/eclipse-iofog/router
 RUN go build -o bin/router
 
-FROM ubuntu:latest
+FROM debian:latest
 
 RUN apt-get update && \
     apt-get install -y python iputils-ping && \
