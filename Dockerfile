@@ -43,6 +43,7 @@ COPY --from=qpid-builder /usr/lib/openssh /usr/lib/openssh
 COPY --from=qpid-builder /usr/lib/*-linux-* /usr/lib/
 COPY --from=qpid-builder /usr/sbin/qdrouterd /usr/sbin/qdrouterd
 COPY --from=qpid-builder /usr/bin/qdmanage /usr/bin/qdmanage
+COPY --from=qpid-builder /usr/bin/qdstat /usr/bin/qdstat
 
 COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-dispatch/router
 
