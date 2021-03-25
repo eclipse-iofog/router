@@ -1,17 +1,20 @@
 FROM ubuntu:18.04 AS qpid-builder
 
-ENV TZ=America/New_York
-ENV DEBIAN_FRONTEND=noninteractive
+# https://github.com/apache/qpid-dispatch/blob/1.15.0/dockerfiles/Dockerfile-ubuntu
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
+    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev libnghttp2-dev python3-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
-RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && git submodule update --init
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python3 get-pip.py
+RUN pip3 install quart
+RUN pip3 install selectors
+RUN pip3 install grpcio protobuf
 
-WORKDIR /qpid-dispatch
-
-RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
+RUN git clone -b 1.15.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git
+RUN cd /qpid-dispatch/qpid-proton && git checkout 0.33.0 && cd /qpid-dispatch && git submodule update --init
 
 WORKDIR /qpid-dispatch
 
