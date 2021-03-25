@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 AS qpid-builder
+FROM ubuntu:20.04 AS qpid-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 # Install all the required packages. Some in this list were picked off from proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)
@@ -15,7 +15,7 @@ RUN mkdir qpid-proton/build && cd qpid-proton/build && cmake .. -DSYSINSTALL_BIN
 
 WORKDIR /qpid-dispatch
 
-RUN mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRIND=NO && cmake --build . --target install
+RUN mkdir build && cd build && cmake .. -DUSE_LIBWEBSOCKETS=ON -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRIND=NO && cmake --build . --target install
 
 FROM golang:latest AS go-builder
 
@@ -24,7 +24,7 @@ WORKDIR /go/src/github.com/eclipse-iofog/router
 COPY . /go/src/github.com/eclipse-iofog/router
 RUN go build -o bin/router
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 RUN apt-get update && \
     apt-get install -y python iputils-ping && \
