@@ -4,7 +4,7 @@ FROM ubuntu:18.04 AS qpid-builder
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev libnghttp2-dev python3-dev libuv1-dev sasl2-bin swig maven git && \
+    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev libnghttp2-dev python3-dev libuv1-dev sasl2-bin swig maven git libxml2-dev libxslt1-dev && \
     apt-get -y clean
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
@@ -12,6 +12,7 @@ RUN python3 get-pip.py
 RUN pip3 install quart
 RUN pip3 install selectors
 RUN pip3 install grpcio protobuf
+RUN pip3 install lxml
 
 RUN git clone -b 1.15.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git
 RUN cd /qpid-dispatch/qpid-proton && git checkout 0.33.0 && cd /qpid-dispatch && git submodule update --init
