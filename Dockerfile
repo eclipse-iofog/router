@@ -34,12 +34,12 @@ RUN go build -o bin/router
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y python iputils-ping && \
+    apt-get install -y python3 python3-dev iputils-ping && \
     apt-get -y clean
 
 COPY --from=qpid-builder /usr/lib/lib* /usr/lib/
 COPY --from=qpid-builder /usr/lib/qpid-dispatch /usr/lib/qpid-dispatch
-COPY --from=qpid-builder /usr/lib/python2.7 /usr/lib/python2.7
+COPY --from=qpid-builder /usr/lib/python3.6 /usr/lib/python3.6
 COPY --from=qpid-builder /usr/lib/ssl /usr/lib/ssl
 COPY --from=qpid-builder /usr/lib/sasl2 /usr/lib/sasl2
 COPY --from=qpid-builder /usr/lib/openssh /usr/lib/openssh
@@ -52,6 +52,6 @@ COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-
 
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
 
-ENV PYTHONPATH=/usr/lib/python2.7/site-packages
+ENV PYTHONPATH=/usr/lib/python3.6/site-packages
 
 CMD ["/qpid-dispatch/router"]
