@@ -1,21 +1,13 @@
 FROM ubuntu:18.04 AS qpid-builder
 
-# https://github.com/apache/qpid-dispatch/blob/1.15.0/dockerfiles/Dockerfile-ubuntu
 ARG DEBIAN_FRONTEND=noninteractive
-
+# Install all the required packages. Some in this list were picked off from proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)
 RUN apt-get update && \
-    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev libnghttp2-dev python3-dev libuv1-dev sasl2-bin swig maven git libxml2-dev libxslt1-dev && \
+    apt-get install -y gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python3 get-pip.py
-RUN pip3 install quart
-RUN pip3 install selectors
-RUN pip3 install grpcio protobuf
-RUN pip3 install lxml
-
-RUN git clone -b 1.15.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git
-RUN cd /qpid-dispatch/qpid-proton && git checkout 0.33.0 && cd /qpid-dispatch && git submodule update --init
+RUN git clone -b 1.14.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git
+RUN cd /qpid-dispatch/qpid-proton && git checkout 0.31.0 && cd /qpid-dispatch && git submodule update --init
 
 WORKDIR /qpid-dispatch
 
@@ -35,12 +27,12 @@ RUN go build -o bin/router
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y python3 python3-dev iputils-ping && \
+    apt-get install -y python iputils-ping && \
     apt-get -y clean
 
 COPY --from=qpid-builder /usr/lib/lib* /usr/lib/
 COPY --from=qpid-builder /usr/lib/qpid-dispatch /usr/lib/qpid-dispatch
-COPY --from=qpid-builder /usr/lib/python3.6 /usr/lib/python3.6
+COPY --from=qpid-builder /usr/lib/python2.7 /usr/lib/python2.7
 COPY --from=qpid-builder /usr/lib/ssl /usr/lib/ssl
 COPY --from=qpid-builder /usr/lib/sasl2 /usr/lib/sasl2
 COPY --from=qpid-builder /usr/lib/openssh /usr/lib/openssh
@@ -53,6 +45,7 @@ COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-
 
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
 
-ENV PYTHONPATH=/usr/lib/python3.6/site-packages
+ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 
-CMD ["/qpid-dispatch/router"]
+# CMD ["/qpid-dispatch/router"]
+ENTRYPOINT ["qdrouterd"]
