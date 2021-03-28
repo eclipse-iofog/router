@@ -1,13 +1,20 @@
-FROM ubuntu:20.04 AS qpid-builder
+FROM ubuntu:18.04 AS qpid-builder
 
-ARG DEBIAN_FRONTEND=noninteractive
-# Install all the required packages. Some in this list were picked off from proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)
+ENV TZ=America/New_York
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
-    apt-get install -y gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
+    apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
-RUN git clone -b 1.14.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git
-RUN cd /qpid-dispatch/qpid-proton && git checkout 0.31.0 && cd /qpid-dispatch && git submodule update --init
+RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git
+WORKDIR /qpid-dispatch
+
+RUN git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets
+RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.31.0
+
+
+RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
 
 WORKDIR /qpid-dispatch
 
@@ -15,7 +22,7 @@ RUN mkdir qpid-proton/build && cd qpid-proton/build && cmake .. -DSYSINSTALL_BIN
 
 WORKDIR /qpid-dispatch
 
-RUN mkdir build && cd build && cmake .. -DUSE_LIBWEBSOCKETS=ON -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRIND=NO && cmake --build . --target install
+RUN mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRIND=NO && cmake --build . --target install
 
 FROM golang:latest AS go-builder
 
@@ -24,7 +31,7 @@ WORKDIR /go/src/github.com/eclipse-iofog/router
 COPY . /go/src/github.com/eclipse-iofog/router
 RUN go build -o bin/router
 
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 
 RUN apt-get update && \
     apt-get install -y python iputils-ping && \
