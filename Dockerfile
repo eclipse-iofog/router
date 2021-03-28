@@ -11,7 +11,7 @@ RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid
 WORKDIR /qpid-dispatch
 
 RUN git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets
-RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.32.0
+RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.31.0
 
 
 RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
