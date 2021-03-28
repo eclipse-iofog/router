@@ -7,9 +7,12 @@ RUN apt-get update && \
     apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
-RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets && git submodule add -b 0.32.0 https://gitbox.apache.org/repos/asf/qpid-proton.git && git submodule update --init
-
+RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git
 WORKDIR /qpid-dispatch
+
+RUN git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets
+RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.32.0
+
 
 RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
 
