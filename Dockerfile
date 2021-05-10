@@ -7,9 +7,13 @@ RUN apt-get update && \
     apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
-RUN git clone -b 1.12.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git && cd /qpid-dispatch && git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets && git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && git submodule update --init
+RUN git clone -b 1.12.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git
 
 WORKDIR /qpid-dispatch
+
+RUN git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets
+RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.31.0
+
 
 RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
 
@@ -43,6 +47,7 @@ COPY --from=qpid-builder /usr/lib/openssh /usr/lib/openssh
 COPY --from=qpid-builder /usr/lib/*-linux-* /usr/lib/
 COPY --from=qpid-builder /usr/sbin/qdrouterd /usr/sbin/qdrouterd
 COPY --from=qpid-builder /usr/bin/qdmanage /usr/bin/qdmanage
+COPY --from=qpid-builder /usr/bin/qdstat /usr/bin/qdstat
 
 COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-dispatch/router
 
