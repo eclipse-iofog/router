@@ -7,7 +7,8 @@ RUN apt-get update && \
     apt-get install -y gcc g++ automake libtool zlib1g-dev cmake libsasl2-dev libssl-dev python python-dev libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
-RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git
+RUN git clone -b 1.12.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git
+
 WORKDIR /qpid-dispatch
 
 RUN git submodule add -b v2.1-stable https://github.com/warmcat/libwebsockets
