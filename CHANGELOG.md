@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.0.0-beta1] - 13 August 2021
+
+* Pin Docker image to Go 1.16.7
+
 ## [v3.0.0-alpha1] - 24 March 2021
 
 * No changes, releasing to synchronize with other projects
