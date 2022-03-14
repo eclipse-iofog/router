@@ -57,15 +57,6 @@ COPY --from=qpid-builder /usr/lib/pkgconfig/libqpid* /usr/lib/pkgconfig/
 COPY --from=qpid-builder /usr/lib/cmake/Proton /usr/lib/cmake/Proton
 COPY --from=qpid-builder /usr/share/proton /usr/share/proton
 
-COPY --from=qpid-builder /usr/include/libwebsockets /usr/include/libwebsockets
-COPY --from=qpid-builder /usr/include/libwebsockets.h /usr/include/libwebsockets.h
-COPY --from=qpid-builder /usr/include/lws_config.h /usr/include/lws_config.h
-COPY --from=qpid-builder /usr/lib/cmake/libwebsockets /usr/lib/cmake/libwebsockets
-COPY --from=qpid-builder /usr/lib/libwebsockets.* /usr/lib/
-COPY --from=qpid-builder /usr/lib/pkgconfig/libwebsocket* /usr/lib/pkgconfig/
-COPY --from=qpid-builder /usr/bin/libwebsockets* /usr/bin/
-COPY --from=qpid-builder /usr/share/libwebsockets-test-server /usr/share/libwebsockets-test-server
-
 COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-dispatch/router
 
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
