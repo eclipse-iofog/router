@@ -57,6 +57,8 @@ COPY --from=qpid-builder /usr/lib/pkgconfig/libqpid* /usr/lib/pkgconfig/
 COPY --from=qpid-builder /usr/lib/cmake/Proton /usr/lib/cmake/Proton
 COPY --from=qpid-builder /usr/share/proton /usr/share/proton
 
+# Silly hack to fix layer issue in Azure Devops :-/
+RUN true
 COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-dispatch/router
 
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
