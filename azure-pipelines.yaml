@@ -4,11 +4,11 @@ trigger:
       - v*
   branches:
     include:
-      - master
+      - develop
   paths:
     exclude:
       - README.md
-      - CHANGELOG.md
+      - LICENSE
 pr: none
   
 jobs:
@@ -53,6 +53,7 @@ jobs:
         parameters:
           imageName: $(imageName)
           imageTag: $(imageTag)-$(imageTagSuffix)
+          dockerFile: 'Dockerfile'
   
   - job: ioFogRouterDockerManifest
     dependsOn: RouterDockerImages
