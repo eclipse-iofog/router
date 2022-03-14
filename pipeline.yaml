@@ -1,39 +1,27 @@
 parameters:
-  - name: 'arch'
+  - name: imageName
     type: string
-    default: X86
-  - name: 'repository'
+  - name: imageTag
     type: string
-  - name: 'imageTag'
+  - name: dockerFile
     type: string
 
 steps:
-  - script: |
-      echo "gcr.io/${{ parameters.repository }}:${{ parameters.imageTag }}" > ${{ parameters.arch }}_DOCKER_IMAGE
-      echo "gcr.io/${{ parameters.repository }}:${{ parameters.imageTag }}"
-    displayName: 'Save Docker image name and tag to ${{ parameters.arch }}_DOCKER_IMAGE into artifacts'
-
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: $(System.DefaultWorkingDirectory)
-      TargetFolder: $(Build.ArtifactStagingDirectory)
-      Contents: |
-        ${{ parameters.arch }}_DOCKER_IMAGE
-      OverWrite: true
-    displayName: 'artefacts to publish'
-
   - task: Docker@2
-    displayName: 'build and push docker image'
+    displayName: Build image
+    inputs:
+      repository: ${{ parameters.imageName }}
+      command: build
+      Dockerfile: ${{ parameters.dockerFile }}
+      tags: |
+        ${{ parameters.imageTag }}
+      arguments: --build-arg BASE_IMAGE_TAG=${{ parameters.imageTag }}
+  - task: Docker@2
+    displayName: Push image
     inputs:
       containerRegistry: 'Edgeworx GCP'
-      repository: ${{ parameters.repository }}
-      command: 'buildAndPush'
-      Dockerfile: 'Dockerfile'
+      repository: ${{ parameters.imageName }}
+      command: push
+      Dockerfile: ${{ parameters.dockerFile }}
       tags: |
-        $(Build.SourceBranchName)
         ${{ parameters.imageTag }}
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: ${{ parameters.arch }}
-    displayName: 'publish artifacts'
