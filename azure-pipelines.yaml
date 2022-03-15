@@ -107,5 +107,5 @@ jobs:
         displayName: 'Create image manifest'
 
       - script: |
-          docker manifest push $(imageName):$(imageTag)
+          docker manifest push gcr.io/$(imageName):$(imageTag)
         displayName: 'Push image manifest'
