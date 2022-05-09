@@ -11,9 +11,6 @@ RUN git clone -b 1.11.0 --single-branch https://gitbox.apache.org/repos/asf/qpid
 
 WORKDIR /qpid-dispatch
 
-# Transform deprecated errors into warning until we get this qpid thing sorted out
-RUN sed -i 's/add_compile_options(-Werror)/add_compile_options(-Werror)\n add_compile_options(-Wno-error=deprecated-declarations)/g' /qpid-dispatch/CMakeLists.txt
-
 RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
 
 WORKDIR /qpid-dispatch
