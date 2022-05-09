@@ -43,7 +43,7 @@ RUN apt-get update && \
 
 COPY --from=qpid-builder /usr/lib/lib* /usr/lib/
 COPY --from=qpid-builder /usr/lib/python3 /usr/lib/python3
-COPY --from=qpid-builder /usr/lib/python3.9 /usr/lib/python3.9
+COPY --from=qpid-builder /usr/lib/python3.10 /usr/lib/python3.10
 COPY --from=qpid-builder /usr/lib/ssl /usr/lib/ssl
 COPY --from=qpid-builder /usr/lib/sasl2 /usr/lib/sasl2
 COPY --from=qpid-builder /usr/lib/openssh /usr/lib/openssh
@@ -67,6 +67,6 @@ COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-
 
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
 
-ENV PYTHONPATH=/usr/lib/python3.9/site-packages
+ENV PYTHONPATH=/usr/lib/python3.10/site-packages
 
 CMD ["/qpid-dispatch/router"]
