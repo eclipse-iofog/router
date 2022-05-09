@@ -16,6 +16,7 @@ RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd 
 
 # Transform deprecated errors into warning until we get this qpid thing sorted out
 RUN sed -i 's/-Werror/-Werror -Wno-error=deprecated-declarations/g' /qpid-dispatch/libwebsockets/CMakeLists.txt
+RUN sed -i 's/-Werror/-Werror -Wno-error=deprecated-declarations/g' /qpid-dispatch/qpid-proton/CMakeLists.txt
 
 RUN mkdir libwebsockets/build && cd /qpid-dispatch/libwebsockets/build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
 
