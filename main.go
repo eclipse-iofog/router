@@ -15,11 +15,12 @@ package main
 
 import (
 	"errors"
-	rt "github.com/eclipse-iofog/router/internal/router"
 	"log"
 	"os"
 
-	sdk "github.com/eclipse-iofog/iofog-go-sdk/pkg/microservices"
+	rt "github.com/eclipse-iofog/router/internal/router"
+
+	sdk "github.com/eclipse-iofog/iofog-go-sdk/v3/pkg/microservices"
 )
 
 var (
