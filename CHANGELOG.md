@@ -1,5 +1,8 @@
 # Changelog
 
+## [v3.0.0] - 10 May 2022
+* Updated iofog-go-sdk to v3.0.0
+
 ## [v3.0.0-beta1] - 13 August 2021
 
 * Pin Docker image to Go 1.16.7
