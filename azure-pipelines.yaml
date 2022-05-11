@@ -11,6 +11,13 @@ trigger:
       - LICENSE
 pr: none
 
+variables:
+  imageName: 'focal-freedom-236620/router'
+  imageTag: 'dev'
+  ref: $(Build.SourceBranch)
+  buildTag: $(Build.BuildId)
+  isRelease: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/')]
+
 stages:
 - stage: Build
   jobs:
@@ -31,13 +38,6 @@ stages:
           imageTagSuffix: 'arm64v8'
 
     pool: $(poolImageName)
-
-    variables:
-      imageName: 'focal-freedom-236620/router'
-      imageTag: 'dev'
-      ref: $(Build.SourceBranch)
-      buildTag: $(Build.BuildId)
-      isRelease: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/')]
 
     steps:
       - script: |
@@ -67,10 +67,6 @@ stages:
     pool: 'Azure Pipelines'
 
     variables:
-      imageName: 'focal-freedom-236620/router'
-      imageTag: 'dev'
-      ref: $(Build.SourceBranch)
-      buildTag: $(Build.BuildId)
       DOCKER_CLI_EXPERIMENTAL: enabled
 
     steps:
@@ -122,10 +118,6 @@ stages:
     pool: 'Azure Pipelines'
 
     variables:
-      imageName: 'focal-freedom-236620/router'
-      imageTag: 'dev'
-      ref: $(Build.SourceBranch)
-      buildTag: $(Build.BuildId)
       DOCKER_CLI_EXPERIMENTAL: enabled
 
     steps:
