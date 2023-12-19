@@ -68,5 +68,7 @@ COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
 
 ENV PYTHONPATH=/usr/lib/python3.10/site-packages
-
+LABEL org.opencontainers.image.description Router
+LABEL org.opencontainers.image.source=https://github.com/datasance/Router
+LABEL org.opencontainers.image.licenses=EPL2.0
 CMD ["/qpid-dispatch/router"]
