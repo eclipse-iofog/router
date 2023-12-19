@@ -27,7 +27,7 @@ WORKDIR /qpid-dispatch
 RUN mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRIND=NO && cmake --build . --target install
 
 # Build ioFog Router utility
-FROM golang:1.16.7 AS go-builder
+FROM golang:1.21.5 AS go-builder
 
 RUN mkdir -p /go/src/github.com/eclipse-iofog/router
 WORKDIR /go/src/github.com/eclipse-iofog/router
