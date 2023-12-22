@@ -18,7 +18,7 @@ import (
 	"log"
 	"os"
 
-	rt "github.com/eclipse-iofog/router/internal/router"
+	rt "github.com/datasance/router/internal/router"
 
 	sdk "github.com/eclipse-iofog/iofog-go-sdk/v3/pkg/microservices"
 )

@@ -1,4 +1,4 @@
-module github.com/eclipse-iofog/router
+module github.com/datasance/router
 
 go 1.16
 

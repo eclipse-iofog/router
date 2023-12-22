@@ -16,7 +16,7 @@ package router
 import (
 	"fmt"
 
-	"github.com/eclipse-iofog/router/internal/exec"
+	"github.com/datasance/router/internal/exec"
 )
 
 type Listener struct {

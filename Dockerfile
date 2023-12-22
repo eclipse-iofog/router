@@ -29,9 +29,9 @@ RUN mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRI
 # Build ioFog Router utility
 FROM golang:1.21.5 AS go-builder
 
-RUN mkdir -p /go/src/github.com/eclipse-iofog/router
-WORKDIR /go/src/github.com/eclipse-iofog/router
-COPY . /go/src/github.com/eclipse-iofog/router
+RUN mkdir -p /go/src/github.com/datasance/router
+WORKDIR /go/src/github.com/datasance/router
+COPY . /go/src/github.com/datasance/router
 RUN go build -o bin/router
 
 # Build final image
@@ -63,7 +63,7 @@ COPY --from=qpid-builder /usr/share/proton /usr/share/proton
 
 # Silly hack to fix layer issue in Azure Devops :-/
 RUN true
-COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /qpid-dispatch/router
+COPY --from=go-builder /go/src/github.com/datasance/router/bin/router /qpid-dispatch/router
 
 COPY scripts/launch.sh /qpid-dispatch/launch.sh
 
