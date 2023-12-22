@@ -12,7 +12,7 @@ RUN git clone -b 1.18.0 --single-branch https://gitbox.apache.org/repos/asf/qpid
 
 WORKDIR /qpid-dispatch
 RUN git submodule add -b v3.0-stable https://github.com/warmcat/libwebsockets
-RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.36.0
+RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.39.0
 
 # Transform deprecated errors into warning until we get this qpid thing sorted out
 RUN sed -i 's/-Werror/-Werror -Wno-error=deprecated-declarations/g' /qpid-dispatch/libwebsockets/CMakeLists.txt
