@@ -1,18 +1,18 @@
 # Build Apache Qpid Dispatch
 FROM ubuntu:latest AS qpid-builder
 
-ENV TZ=America/New_York
+ENV TZ=Europe/Dublin
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev python3 python3-dev libuv1-dev sasl2-bin swig maven git && \
+    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev python3 python3-dev  python3.10-venv libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
 RUN git clone -b 1.18.0 --single-branch https://gitbox.apache.org/repos/asf/qpid-dispatch.git
 
 WORKDIR /qpid-dispatch
 RUN git submodule add -b v3.0-stable https://github.com/warmcat/libwebsockets
-RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.39.0
+RUN git submodule add https://gitbox.apache.org/repos/asf/qpid-proton.git && cd qpid-proton/ && git checkout 0.36.0
 
 # Transform deprecated errors into warning until we get this qpid thing sorted out
 RUN sed -i 's/-Werror/-Werror -Wno-error=deprecated-declarations/g' /qpid-dispatch/libwebsockets/CMakeLists.txt
