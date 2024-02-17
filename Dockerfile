@@ -5,7 +5,7 @@ ENV TZ=Europe/Dublin
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev python3-dev libuv1-dev sasl2-bin swig maven git && \
+    apt-get install -y curl gcc g++ automake libwebsockets-dev libtool zlib1g-dev cmake libsasl2-dev libssl-dev python3-dev python3.10-venv libuv1-dev sasl2-bin swig maven git && \
     apt-get -y clean
 
 
@@ -31,7 +31,7 @@ RUN go build -o bin/router
 FROM ubuntu:latest
 
 RUN apt-get update && \
-    apt-get install -y python3 python3-dev iputils-ping libsasl2-modules nano && \
+    apt-get install -y python3 python3-dev python3.10-venv iputils-ping libsasl2-modules nano && \
     apt-get -y clean
 
 COPY --from=qpid-builder /usr/lib/lib* /usr/lib/
