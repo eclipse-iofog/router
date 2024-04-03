@@ -20,7 +20,7 @@ import (
 
 	rt "github.com/datasance/router/internal/router"
 
-	sdk "github.com/eclipse-iofog/iofog-go-sdk/v3/pkg/microservices"
+	sdk "github.com/datasance/iofog-go-sdk/v3/pkg/microservices"
 )
 
 var (
