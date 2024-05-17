@@ -85,6 +85,7 @@ jobs:
         context: .
         file: Dockerfile
         platforms: ${{ matrix.platform }}
+        provenance: false
         push: true
         tags: |
           ghcr.io/datasance/${{ env.IMAGE_NAME }}:${{ steps.tags.outputs.VERSION }}
