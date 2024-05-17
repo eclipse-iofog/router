@@ -86,6 +86,7 @@ jobs:
         file: Dockerfile
         platforms: ${{ matrix.platforms }}
         push: true
+        provenance: false
         outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=Router
         tags: |
           ghcr.io/datasance/${{ env.IMAGE_NAME }}:${{ steps.tags.outputs.VERSION }}
