@@ -27,10 +27,13 @@ RUN mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DUSE_VALGRI
 
 FROM golang:1.16.7 AS go-builder
 
+ARG TARGETOS
+ARG TARGETARCH
+
 RUN mkdir -p /go/src/github.com/eclipse-iofog/router
 WORKDIR /go/src/github.com/eclipse-iofog/router
 COPY . /go/src/github.com/eclipse-iofog/router
-RUN go build -o bin/router
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o bin/router
 
 FROM ubuntu:18.04
 

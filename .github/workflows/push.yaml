@@ -83,10 +83,10 @@ jobs:
       uses: docker/build-push-action@v5
       id: build_push_ghcr
       with:
+        context: .
         file: Dockerfile
-        platforms: ${{ matrix.platforms }}
+        platforms: ${{ matrix.platform }}
         push: true
-        provenance: false
         tags: |
           ghcr.io/datasance/${{ env.IMAGE_NAME }}:${{ steps.tags.outputs.VERSION }}
           ghcr.io/datasance/${{ env.IMAGE_NAME }}:latest
