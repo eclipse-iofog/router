@@ -86,9 +86,7 @@ jobs:
         file: Dockerfile
         platforms: ${{ matrix.platforms }}
         push: true
-        outputs: |
-          type=image,name=${{ steps.build_push_ghcr.outputs.name }},
-          annotations=${{ steps.build_push_ghcr.outputs.annotations }}
+        provenance: false
         tags: |
           ghcr.io/datasance/${{ env.IMAGE_NAME }}:${{ steps.tags.outputs.VERSION }}
           ghcr.io/datasance/${{ env.IMAGE_NAME }}:latest
