@@ -45,9 +45,9 @@ type Router struct {
 	Config     *Config
 }
 
-func qdmanage(args []string) {
+func skmanage(args []string) {
 	exitChannel := make(chan error)
-	go exec.Run(exitChannel, "qdmanage", args, []string{})
+	go exec.Run(exitChannel, "skmanage", args, []string{})
 	for {
 		select {
 		case <-exitChannel:
@@ -69,7 +69,7 @@ func deleteEntity(name string) {
 		"delete",
 		fmt.Sprintf("--name=%s", name),
 	}
-	qdmanage(args)
+	skmanage(args)
 }
 
 func (router *Router) createListener(listener Listener) {
@@ -83,7 +83,7 @@ func (router *Router) createListener(listener Listener) {
 		fmt.Sprintf("saslMechanisms=ANONYMOUS"),
 		fmt.Sprintf("authenticatePeer=no"),
 	}
-	qdmanage(args)
+	skmanage(args)
 	router.listeners[listenerName(listener)] = listener
 }
 
@@ -96,7 +96,7 @@ func (router *Router) createConnector(connector Connector) {
 		fmt.Sprintf("host=%s", connector.Host),
 		fmt.Sprintf("name=%s", connectorName(connector)),
 	}
-	qdmanage(args)
+	skmanage(args)
 	router.connectors[connectorName(connector)] = connector
 }
 
@@ -170,5 +170,5 @@ func (router *Router) StartRouter(ch chan<- error) {
 	}
 
 	routerConfig := router.GetRouterConfig()
-	exec.Run(ch, "/qpid-dispatch/launch.sh", []string{}, []string{"QDROUTERD_CONF=" + routerConfig})
+	exec.Run(ch, "/home/skrouterd/bin/launch.sh", []string{}, []string{"QDROUTERD_CONF=" + routerConfig})
 }
