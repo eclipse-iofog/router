@@ -1,21 +1,9 @@
-/*
- *  *******************************************************************************
- *  * Copyright (c) 2023 Contributors to the Eclipse ioFog Project
- *  *
- *  * This program and the accompanying materials are made available under the
- *  * terms of the Eclipse Public License v. 2.0 which is available at
- *  * http://www.eclipse.org/legal/epl-2.0
- *  *
- *  * SPDX-License-Identifier: EPL-2.0
- *  *******************************************************************************
- *
- */
-
 package main
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -41,21 +29,25 @@ func init() {
 		Addresses:   make(map[string]qdr.Address),
 		LogConfig:   make(map[string]qdr.LogConfig),
 		Bridges: qdr.BridgeConfig{
-			TcpListeners:  make(map[string]qdr.TcpEndpoint),
-			TcpConnectors: make(map[string]qdr.TcpEndpoint),
+			TCPListeners:  make(map[string]qdr.TCPEndpoint),
+			TCPConnectors: make(map[string]qdr.TCPEndpoint),
 		},
 	}
 }
 
 func main() {
+	var err error
 	if config.IsKubernetesRouterMode() {
-		runKubernetesMode()
-		return
+		err = runKubernetesMode()
+	} else {
+		err = runPotMode()
 	}
-	runPotMode()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-func runKubernetesMode() {
+func runKubernetesMode() error {
 	configPath := config.GetConfigPath()
 	// Config file is volume-mounted by the operator at QDROUTERD_CONF; retry briefly if not yet present.
 	var data []byte
@@ -69,11 +61,13 @@ func runKubernetesMode() {
 			time.Sleep(time.Second)
 			continue
 		}
-		log.Fatalf("Failed to read router config from %s: %v", configPath, err)
+		log.Printf("Failed to read router config from %s: %v", configPath, err)
+		return fmt.Errorf("failed to read router config from %s: %w", configPath, err)
 	}
 	qdrConfig, err := qdr.UnmarshalRouterConfig(string(data))
 	if err != nil {
-		log.Fatalf("Failed to unmarshal router config: %v", err)
+		log.Printf("Failed to unmarshal router config: %v", err)
+		return fmt.Errorf("failed to unmarshal router config: %w", err)
 	}
 	router.Config = &rt.Config{
 		Metadata:    qdrConfig.Metadata,
@@ -90,7 +84,7 @@ func runKubernetesMode() {
 	ctx := context.Background()
 	var lastAppliedMu sync.Mutex
 	lastApplied := string(data)
-	go watch.WatchConfigFile(ctx, configPath, func(configJSON string) error {
+	go watch.ConfigFile(ctx, configPath, func(configJSON string) error {
 		lastAppliedMu.Lock()
 		same := lastApplied == configJSON
 		lastAppliedMu.Unlock()
@@ -121,28 +115,28 @@ func runKubernetesMode() {
 		lastAppliedMu.Unlock()
 		return nil
 	})
-	go watch.WatchSSLProfileDir(ctx, config.GetSSLProfilePath(), router.OnSSLProfilesFromDisk)
+	go watch.SSLProfileDir(ctx, config.GetSSLProfilePath(), router.OnSSLProfilesFromDisk)
 	<-exitChannel
-	os.Exit(0)
+	return nil
 }
 
-func runPotMode() {
-	ioFogClient, clientError := sdk.NewDefaultIoFogClient()
+func runPotMode() error {
+	edgeletClient, clientError := sdk.NewDefaultEdgeletAPIClient()
 	if clientError != nil {
-		log.Fatalln(clientError.Error())
+		return clientError
 	}
-	if err := updateConfig(ioFogClient, router.Config); err != nil {
-		log.Fatalln(err.Error())
+	if err := updateConfig(edgeletClient, router.Config); err != nil {
+		return err
 	}
-	confChannel := ioFogClient.EstablishControlWsConnection(0)
+	confChannel := edgeletClient.EstablishControlWsConnection(0)
 	exitChannel := make(chan error)
 	go router.StartRouter(exitChannel)
 	ctx := context.Background()
-	go watch.WatchSSLProfileDir(ctx, config.GetSSLProfilePath(), router.OnSSLProfilesFromDisk)
+	go watch.SSLProfileDir(ctx, config.GetSSLProfilePath(), router.OnSSLProfilesFromDisk)
 	for {
 		select {
 		case <-exitChannel:
-			os.Exit(0)
+			return nil
 		case <-confChannel:
 			newConfig := &rt.Config{
 				SslProfiles: make(map[string]qdr.SslProfile),
@@ -151,12 +145,12 @@ func runPotMode() {
 				Addresses:   make(map[string]qdr.Address),
 				LogConfig:   make(map[string]qdr.LogConfig),
 				Bridges: qdr.BridgeConfig{
-					TcpListeners:  make(map[string]qdr.TcpEndpoint),
-					TcpConnectors: make(map[string]qdr.TcpEndpoint),
+					TCPListeners:  make(map[string]qdr.TCPEndpoint),
+					TCPConnectors: make(map[string]qdr.TCPEndpoint),
 				},
 			}
-			if err := updateConfig(ioFogClient, newConfig); err != nil {
-				log.Fatal(err)
+			if err := updateConfig(edgeletClient, newConfig); err != nil {
+				log.Printf("Error updating config from EdgeletAPI: %v", err)
 			} else {
 				if err := router.UpdateRouter(newConfig); err != nil {
 					log.Printf("Error updating router: %v", err)
@@ -166,17 +160,29 @@ func runPotMode() {
 	}
 }
 
-func updateConfig(ioFogClient *sdk.IoFogClient, config interface{}) error {
-	attemptLimit := 5
-	var err error
+func updateConfig(edgeletClient *sdk.EdgeletAPIClient, config any) error {
+	const attemptLimit = 5
+	var lastErr error
 
-	for err = ioFogClient.GetConfigIntoStruct(config); err != nil && attemptLimit > 0; attemptLimit-- {
-		return err
+	for attempt := 1; attempt <= attemptLimit; attempt++ {
+		lastErr = edgeletClient.GetConfigIntoStruct(config)
+		if lastErr == nil {
+			return nil
+		}
+		if attempt == attemptLimit {
+			break
+		}
+		log.Printf("WARN: Failed to get config from ioFog local API (attempt %d/%d): %v", attempt, attemptLimit, lastErr)
+		time.Sleep(time.Duration(attempt) * time.Second)
 	}
 
-	if attemptLimit == 0 {
-		return errors.New("Update config failed")
+	var authErr *sdk.AuthMaterialError
+	if errors.As(lastErr, &authErr) {
+		return fmt.Errorf("failed to load ioFog service-account auth material: %w", lastErr)
 	}
-
-	return nil
+	var apiErr *sdk.EdgeletAPIError
+	if errors.As(lastErr, &apiErr) {
+		return fmt.Errorf("EdgeletAPI returned an error while getting config: %w", lastErr)
+	}
+	return fmt.Errorf("update config failed after %d attempts: %w", attemptLimit, lastErr)
 }
