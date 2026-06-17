@@ -16,9 +16,9 @@ RUN microdnf -y --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install \
  && microdnf clean all -y
 
 WORKDIR /build
-# Clone skupper-router so repo contents are in /build (not /build/skupper-router)
-RUN git clone --depth 1 --branch main https://github.com/skupperproject/skupper-router.git .
-ENV PROTON_VERSION=main
+# Clone skupper-router 3.5.1 so repo contents are in /build (not /build/skupper-router)
+RUN git clone --depth 1 --branch 3.5.1 https://github.com/skupperproject/skupper-router.git .
+ENV PROTON_VERSION=e5d5c2badb964684bf41ba509a110bf06a24712a
 ENV PROTON_SOURCE_URL=${PROTON_SOURCE_URL:-https://github.com/apache/qpid-proton/archive/${PROTON_VERSION}.tar.gz}
 ENV LWS_VERSION=v4.3.3
 ENV LIBUNWIND_VERSION=v1.8.1
@@ -54,7 +54,7 @@ RUN dnf -y --setopt=install_weak_deps=0 --nodocs \
 RUN [ -d /usr/share/buildinfo ] && cp -a /usr/share/buildinfo /output/usr/share/buildinfo ||:
 RUN [ -d /root/buildinfo ] && cp -a /root/buildinfo /output/root/buildinfo ||:
 
-FROM golang:1.23-alpine AS go-builder
+FROM golang:1.26.4-alpine AS go-builder
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -70,6 +70,16 @@ RUN microdnf install -y tzdata && microdnf reinstall -y tzdata
 
 FROM scratch
 
+ARG OCI_SOURCE_REPO
+ARG OCI_VERSION=latest
+ARG OCI_REVISION
+ARG ROUTER_DISTRIBUTION
+
+LABEL org.opencontainers.image.source="${OCI_SOURCE_REPO}" \
+      org.opencontainers.image.version="${OCI_VERSION}" \
+      org.opencontainers.image.revision="${OCI_REVISION}" \
+      distribution="${ROUTER_DISTRIBUTION}"
+
 COPY --from=packager /output /
 COPY --from=packager /etc/yum.repos.d /etc/yum.repos.d
 
@@ -80,8 +90,7 @@ COPY --from=builder /image /
 WORKDIR /home/skrouterd/bin
 COPY ./scripts/* /home/skrouterd/bin/
 
-ARG version=latest
-ENV VERSION=${version}
+ENV VERSION=${OCI_VERSION}
 ENV QDROUTERD_HOME=/home/skrouterd
 
 COPY LICENSE /licenses/LICENSE
@@ -89,6 +98,8 @@ COPY --from=go-builder /go/src/github.com/eclipse-iofog/router/bin/router /home/
 
 COPY --from=tz /usr/share/zoneinfo /usr/share/zoneinfo
 
-# Env: SKUPPER_PLATFORM=pot|kubernetes (default pot), QDROUTERD_CONF (default /tmp/skrouterd.json),
-# SSL_PROFILE_PATH (default /etc/skupper-router-certs). In K8s mode operator mounts config at QDROUTERD_CONF.
+# Env: SKUPPER_PLATFORM=pot|iofog|kubernetes (default pot), QDROUTERD_CONF (default /tmp/skrouterd.json),
+# SSL_PROFILE_PATH (default /etc/skupper-router-certs), EDGELET_MICROSERVICE_UID (required in pot mode), SSL=true|false.
+# Pot mode uses ioFog LocalAPI v3 over HTTPS/WSS with service-account token and CA mounts.
+# In K8s mode operator mounts config at QDROUTERD_CONF.
 CMD ["/home/skrouterd/bin/router"]
