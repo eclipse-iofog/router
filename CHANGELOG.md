@@ -1,5 +1,24 @@
 # Changelog
 
+
+## [v3.9.0-rc.1] - 2026-09-17
+
+### Wrapper release
+
+- **v3.9.0** — align with the **controller 3.9** release train. No wrapper, Go, or skupper-router version change.
+
+### SDK and LocalAPI
+
+- **iofog-go-sdk v3.9.0-rc.1** (`github.com/eclipse-iofog/iofog-go-sdk/v3`) — upgrade from v3.8.3-rc.1.
+
+### Embedded skupper-router
+
+- Pin and compile upstream **skupper-router 3.5.2** (unchanged from v3.8.3; separate from wrapper semver).
+
+### CI and release
+
+- **`Dockerfile`**: refresh digest pins for `ubi9/ubi-minimal` and `ubi9/ubi`.
+
 ## [v3.8.3-rc.2] - 2026-08-26
 
 ### Wrapper release
