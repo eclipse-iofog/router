@@ -1,6 +1,26 @@
 # Changelog
 
 
+## [v3.9.0] - 2026-09-26
+
+### Wrapper release
+
+- **v3.9.0** — align with the **controller 3.9** release train.
+
+### SDK and LocalAPI
+
+- **iofog-go-sdk v3.9.0** (`github.com/eclipse-iofog/iofog-go-sdk/v3`) — upgrade from v3.9.0-rc.1.
+
+### Embedded skupper-router
+
+- Pin and compile upstream **skupper-router 3.5.3** (was 3.5.2; separate from wrapper semver). Patch release: inter-router parse-depth hardening (#1879), allow streaming links on inter-edge connections (#1878), Proton 0.41.1 CI/compat (#1881). No config, `$management`, launch, or image-layout change.
+
+### CI and release
+
+- **`Dockerfile`**: compile skupper-router **3.5.3**; refresh digest pins for `ubi9/ubi-minimal` and `ubi9/ubi`.
+- **`Dockerfile.edge`**: compile skupper-router **3.5.3**; refresh digest pins for `debian:trixie` and `debian:trixie-slim`.
+- **`Dockerfile.dev`**: base image `quay.io/skupper/skupper-router:3.5.3`.
+
 ## [v3.9.0-rc.1] - 2026-09-17
 
 ### Wrapper release
