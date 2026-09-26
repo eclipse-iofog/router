@@ -1,5 +1,5 @@
 # registry.access.redhat.com/ubi9/ubi-minimal:latest — pin manifest list digest
-FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:7b8e25a1b56ca4d00219198f3b5b51a3e1693a5c4f5369c5e190d7d6cb3f980e AS builder
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:8ebe2ad8fdf3cab3e5a53c1edc69194c98209cfadab24b884f4ad9ebcf7bbbfc AS builder
 
 # upgrade first to avoid fixable vulnerabilities
 # do this in builder as well as in buildee, so builder does not have different pkg versions from buildee image
@@ -17,8 +17,8 @@ RUN microdnf -y --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install \
  && microdnf clean all -y
 
 WORKDIR /build
-# Clone skupper-router 3.5.2 so repo contents are in /build (not /build/skupper-router)
-RUN git clone --depth 1 --branch 3.5.2 https://github.com/skupperproject/skupper-router.git .
+# Clone skupper-router 3.5.3 so repo contents are in /build (not /build/skupper-router)
+RUN git clone --depth 1 --branch 3.5.3 https://github.com/skupperproject/skupper-router.git .
 ENV PROTON_VERSION=e5d5c2badb964684bf41ba509a110bf06a24712a
 ENV PROTON_SOURCE_URL=${PROTON_SOURCE_URL:-https://github.com/apache/qpid-proton/archive/${PROTON_VERSION}.tar.gz}
 ENV LWS_VERSION=v4.3.3
@@ -40,7 +40,7 @@ RUN if [ "$PLATFORM" = "ppc64le" ]; then tar zxpf /qpid-proton-image.tar.gz -C /
 RUN mkdir /image/licenses && cp ./LICENSE /image/licenses
 
 # registry.access.redhat.com/ubi9/ubi:latest — pin manifest list digest
-FROM registry.access.redhat.com/ubi9/ubi@sha256:9295c5c688f487fa5cf27a734fa55ecd57aeb7dc0904ba537da4f42dfa1d0acb AS packager
+FROM registry.access.redhat.com/ubi9/ubi@sha256:a4b9ec09b1e790a53ef25b7777c539976abe519248264298e5194dcbceac8c31 AS packager
 
 RUN dnf -y --setopt=install_weak_deps=0 --nodocs \
     --installroot /output install \
@@ -69,7 +69,7 @@ RUN go fmt ./...
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath  -ldflags="-s -w" -o bin/router .
 
 # registry.access.redhat.com/ubi9/ubi-minimal:latest — pin manifest list digest
-FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:7b8e25a1b56ca4d00219198f3b5b51a3e1693a5c4f5369c5e190d7d6cb3f980e AS tz
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:8ebe2ad8fdf3cab3e5a53c1edc69194c98209cfadab24b884f4ad9ebcf7bbbfc AS tz
 RUN microdnf install -y tzdata && microdnf reinstall -y tzdata
 
 FROM scratch
