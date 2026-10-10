@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [v3.9.1] - 2026-10-10
+
+### Wrapper release
+
+- **v3.9.1** — security/maintenance patch. Go toolchain **1.26.9** (was 1.26.6) picks up the 8 October 2026 stdlib fixes reported by [govulncheck on develop](https://github.com/eclipse-iofog/router/actions/runs/38041668413/job/114182978972). Reachable `net/http` symbols are `ProxyFromEnvironment`, `Header.Get`, `Header.Set` (Edgelet control websocket) and `NewRequest`, `Client.Do` (Edgelet config fetch): GO-2026-6603, GO-2026-6610, GO-2026-6611, GO-2026-6612, GO-2026-6617. No wrapper behavior change.
+
+### SDK and LocalAPI
+
+- **iofog-go-sdk v3.9.1** (`github.com/eclipse-iofog/iofog-go-sdk/v3`) — upgrade from v3.9.0. Same Go 1.26.9 pin; no `pkg/microservices` API change. Transitive `golang.org/x/sys` **v0.48.0** (was v0.46.0).
+
+### Embedded skupper-router
+
+- Pin and compile upstream **skupper-router 3.5.3** (unchanged from v3.9.0; separate from wrapper semver).
+
+### CI and release
+
+- **`ci.yml`**, **`release.yml`**, **`govulncheck.yml`**: Go **1.26.9** in workflow env.
+- **`govulncheck.yml`**: schedule is daily (`0 0 * * *`), was weekly.
+- **`Dockerfile`**, **`Dockerfile.dev`**, **`Dockerfile.edge`**: `golang:1.26.9-alpine` builder image (digest-pinned in prod/edge).
+- **`Dockerfile`**: refresh digest pins for `ubi9/ubi-minimal` and `ubi9/ubi`.
+- **`Dockerfile.edge`**: refresh digest pins for `debian:trixie` and `debian:trixie-slim`.
+
 ## [v3.9.0] - 2026-09-26
 
 ### Wrapper release
