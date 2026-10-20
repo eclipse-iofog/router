@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [v3.9.2] - 2026-10-20
+
+### Wrapper release
+
+- **v3.9.2** — align with the component release train. Refresh digest-pinned UBI 9 base images. No wrapper, Go, SDK, or skupper-router version change.
+
+### Embedded skupper-router
+
+- Pin and compile upstream **skupper-router 3.5.3** (unchanged from v3.9.1; separate from wrapper semver).
+
+### CI and release
+
+- **`Dockerfile`**: refresh digest pins for `ubi9/ubi-minimal` and `ubi9/ubi` (builder, packager, and tz stages).
+
 ## [v3.9.1] - 2026-10-10
 
 ### Wrapper release
