@@ -1,11 +1,15 @@
 # Changelog
 
 
-## [v3.9.2] - 2026-10-20
+## [v3.9.2] - 2026-10-22
 
 ### Wrapper release
 
-- **v3.9.2** — align with the component release train. Refresh digest-pinned UBI 9 base images. No wrapper, Go, SDK, or skupper-router version change.
+- **v3.9.2** — security/maintenance patch. **Go 1.26.10** minimum (was 1.26.9; see `go.mod`). CI, release, and the govulncheck workflow use the same toolchain. Clears [GO-2026-6809](https://pkg.go.dev/vuln/GO-2026-6809) (`crypto/x509` distrust of compromised intermediate certificates). No wrapper behavior change.
+
+### SDK and LocalAPI
+
+- **iofog-go-sdk v3.9.2** (`github.com/eclipse-iofog/iofog-go-sdk/v3`) — upgrade from v3.9.1. Same Go 1.26.10 pin; no transitive module change (`golang.org/x/sys` stays **v0.48.0**).
 
 ### Embedded skupper-router
 
@@ -13,7 +17,10 @@
 
 ### CI and release
 
+- **`ci.yml`**, **`release.yml`**, **`govulncheck.yml`**: Go **1.26.10** in workflow env.
+- **`Dockerfile`**, **`Dockerfile.dev`**, **`Dockerfile.edge`**: `golang:1.26.10-alpine` builder image (digest-pinned in prod/edge).
 - **`Dockerfile`**: refresh digest pins for `ubi9/ubi-minimal` and `ubi9/ubi` (builder, packager, and tz stages).
+- **`Dockerfile.edge`**: refresh digest pins for `debian:trixie` and `debian:trixie-slim`.
 
 ## [v3.9.1] - 2026-10-10
 
