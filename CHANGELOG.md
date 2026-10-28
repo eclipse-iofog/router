@@ -1,5 +1,24 @@
 # Changelog
 
+## [v3.9.4] - 2026-10-29
+
+### Wrapper release
+
+- **v3.9.4** — align with the component release train. No wrapper or Go version change (toolchain stays **1.26.10**).
+
+### SDK and LocalAPI
+
+- **iofog-go-sdk v3.9.4** (`github.com/eclipse-iofog/iofog-go-sdk/v3`) — upgrade from v3.9.3. Same Go 1.26.10 pin; no transitive module change (`golang.org/x/sys` stays **v0.48.0**).
+
+### Embedded skupper-router
+
+- Pin and compile upstream **skupper-router 3.5.3** (unchanged from v3.9.3; separate from wrapper semver).
+
+### CI and release
+
+- **`Dockerfile`**: refresh digest pins for `ubi9/ubi-minimal` and `ubi9/ubi` (builder, packager, and tz stages), and for `golang:1.26.10-alpine`.
+- **`Dockerfile.edge`**: refresh digest pins for `debian:trixie` (builder and packager), `golang:1.26.10-alpine`, and `debian:trixie-slim`.
+
 ## [v3.9.3] - 2026-10-26
 
 ### Wrapper release
